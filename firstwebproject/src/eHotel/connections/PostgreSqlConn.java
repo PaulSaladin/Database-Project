@@ -201,6 +201,35 @@ public class  PostgreSqlConn{
 	        }
 			      
 	    }
+		
+		public String rentRoom(String ssncustomer, String idroom, String idBooking, String dateStart, String dateEnd, String nameHotel){
+			getConn();
+			String custSSN="";
+			
+	        try{
+	        	if(idBooking == null) {
+	        		String values = "('" + idroom + "','" +  ssncustomer + "','" + nameHotel + "','" + dateStart + "','" + dateEnd + "')";
+	        		ps = db.prepareStatement("INSERT INTO Renting(idroom, idbooking, ssncustomer, namehotel, dateStart, dateEnd) VALUES"+values);
+	        		ps.executeQuery();  
+	        	}
+	        	else {
+	        		ps = db.prepareStatement("select idroom, ssncustomer, namehotel, dateStart, dateEnd from ehotel.booking where idbooking='"+idBooking+"'");
+	        		rs = ps.executeQuery();
+	        		String valuesb = "('" + rs.getString(1) + "','" + idBooking + "','" + rs.getString(2) + "','" + rs.getString(3) + "','" + rs.getString(4) + "','" + rs.getString(5) + "')";
+	        		ps = db.prepareStatement("INSERT INTO Renting(idroom, idbooking, ssncustomer, namehotel, dateStart, dateEnd) VALUES"+valuesb);
+	        		ps.executeQuery();
+	        	}
+
+	            return custSSN;
+
+	        }catch(SQLException e){
+	            e.printStackTrace();
+	            return "";	 
+	        }finally {
+	        	closeDB();
+	        }
+			      
+	    }
 
 
 		
