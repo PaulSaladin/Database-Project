@@ -4,29 +4,46 @@ public class employee {
 	
 //	employee here has employeeid and password attributes
 	
-	private String employee_id;
-	private String employee_pass;
+	private String nameE;
+	private String passwordE;
+	private String nameHotel;
+	private String addressE;
 	
 	public employee() {
 		
 	}
 
-	public String getEmployee_id() {
-		return employee_id;
+	public String getNameE() {
+		return nameE;
 	}
 
-	public void setEmployee_id(String employee_id) {
-		this.employee_id = employee_id;
+	public void setNameE(String nameE) {
+		this.nameE = nameE;
 	}
 
-	public String getEmployee_pass() {
-		return employee_pass;
+	public String getPasswordE() {
+		return passwordE;
 	}
 
-	public void setEmployee_pass(String employee_pass) {
-		this.employee_pass = employee_pass;
+	public void setEmployee_pass(String passwordE) {
+		this.passwordE = passwordE;
 	}
 	
+	public String getAddressE() {
+		return addressE;
+	}
+
+	public void setAddressE(String addressE) {
+		this.addressE = addressE;
+	}
+	
+	public String getNameHotel() {
+		return nameHotel;
+	}
+
+	public void setNameHotel(String nameHotel) {
+		this.nameHotel = nameHotel;
+	}
 	
 	
 	
