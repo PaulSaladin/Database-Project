@@ -130,7 +130,7 @@ public class  PostgreSqlConn{
 				ps = db.prepareStatement("select * from ehotel.room where room_status='available'" );
 				rs = ps.executeQuery();
 				while(rs.next()){
-					String room_no = rs.getString("room_no");
+					Integer room_no = Integer.parseInt(rs.getString("room_no"));
 					String room_status = rs.getString("room_status");
 					Room room = new Room(room_no, room_status);
 					Rooms.add(room);
@@ -146,6 +146,8 @@ public class  PostgreSqlConn{
 			
 		}
 		
+		//aaa
+		
 		public  ArrayList<Room> getbookedRooms(String custSSN){
 			
 			getConn();
@@ -156,7 +158,7 @@ public class  PostgreSqlConn{
 				ps = db.prepareStatement("select * from ehotel.room where customer_ssn='"+custSSN+"'");
 				rs = ps.executeQuery();
 				while(rs.next()){
-					String room_no = rs.getString("room_no");
+					Integer room_no = Integer.parseInt(rs.getString("room_no"));
 					String room_status = rs.getString("room_status");
 					Room room = new Room(room_no, room_status);
 					Rooms.add(room);
