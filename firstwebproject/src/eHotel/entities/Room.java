@@ -10,7 +10,7 @@ public class Room {
 		
 	}
 	
-	public Room(String room_no, String room_status) {
+	public Room(Integer idRoom, String room_status) {
 		this.room_no = room_no;
 		this.room_status = room_status;
 	}
