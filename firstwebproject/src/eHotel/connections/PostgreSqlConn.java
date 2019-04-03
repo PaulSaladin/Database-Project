@@ -56,7 +56,7 @@ public class  PostgreSqlConn{
 			String pwd = "";
 			
 	        try{
-	            ps = db.prepareStatement("select employee_pass from ehotel.employee where employee_id=?");
+	            ps = db.prepareStatement("select passworde from project.employee where namee=?");
 	            
 	            ps.setString(1, param);	               
 	            rs = ps.executeQuery();
