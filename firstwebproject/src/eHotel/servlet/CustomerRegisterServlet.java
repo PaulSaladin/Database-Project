@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import eHotel.connections.PostgreSqlConn;
 import eHotel.entities.Room;
+import eHotel.entities.Booking;
 
 public class CustomerRegisterServlet extends HttpServlet{
 
@@ -26,10 +27,11 @@ public class CustomerRegisterServlet extends HttpServlet{
 		HttpSession session = req.getSession();
 //		employee account = new employee();
 		String custSSN = req.getParameter("custSSN");
+		String custAddress = req.getParameter("custAddress");
 		String custName = req.getParameter("custName");
 		String custPwd = req.getParameter("custPwd");
 		
-		String[] param = new String[] {custSSN,custName,custPwd};
+		String[] param = new String[] {custSSN,custAddress, custName,custPwd};
 		
 		PostgreSqlConn con = new PostgreSqlConn();
 		boolean pwdfromdb = con.insertNewCustomer(param);
@@ -39,7 +41,7 @@ public class CustomerRegisterServlet extends HttpServlet{
 		if (pwdfromdb) {			
 				System.out.println("success");
 				
-				ArrayList<Room> bookedRooms = con.getbookedRooms(custSSN);
+				ArrayList<Booking> bookedRooms = con.getbookedRooms(custSSN);
 				
 				ArrayList<Room> allRooms = con.getAllAvailRooms();
 				

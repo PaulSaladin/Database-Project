@@ -10,8 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import eHotel.connections.PostgreSqlConn;
-import eHotel.entities.Room;
-import eHotel.entities.employee;
+import eHotel.entities.Booking;
 
 public class RoombookServlet extends HttpServlet {
 
@@ -32,14 +31,11 @@ public class RoombookServlet extends HttpServlet {
 		
 		if (userSSN.length()!=0) {			
 			
-			ArrayList<Room> bookedRooms = con.getbookedRooms(userSSN);
-			
-			ArrayList<Room> allRooms = con.getAllAvailRooms();
+			ArrayList<Booking> bookedRooms = con.getbookedRooms(userSSN);
 			
 			
 			req.setAttribute("CustName", custName);
 			req.setAttribute("bookedRooms", bookedRooms);
-			req.setAttribute("allRooms", allRooms);
 
 			req.getRequestDispatcher("booking.jsp").forward(req, resp);
 			return;	
