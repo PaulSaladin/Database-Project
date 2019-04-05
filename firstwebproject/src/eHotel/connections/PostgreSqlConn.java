@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 import eHotel.entities.Room; 
+import eHotel.entities.Booking;
 
 
 public class  PostgreSqlConn{
@@ -74,20 +75,19 @@ public class  PostgreSqlConn{
 	    }
 		
 		
-		public String[] getuserinforbycustSSN(String param){
+		public String[] getuserinforbycustSSN(Integer param){
 			getConn();
 
 			String[] pwd = new String[2];
 			
 	        try{
-	            ps = db.prepareStatement("select * from ehotel.customer where customer_ssn=?");
+	            ps = db.prepareStatement("select password,name from project.customer where ssn=" + param);
 	            
-	            ps.setString(1, param);	               
 	            rs = ps.executeQuery();
 	
 				while(rs.next()) {
-					pwd[0] = rs.getString(2);
-					pwd[1] = rs.getString(3);
+					pwd[0] = rs.getString(1);
+					pwd[1] = rs.getString(2);
 				}
 	            
 	        }catch(SQLException e){
@@ -104,7 +104,7 @@ public class  PostgreSqlConn{
 			
 	        try{
 	        	st = db.createStatement();
-	        	sql = "insert into ehotel.customer values('"+param[0]+"','"+param[1]+"','"+param[2]+"')";
+	        	sql = "insert into ehotel.customer values("+param[0]+",'"+param[1]+"','"+param[2]+"',now(),'"+param[3]+"')";
 	        	
 	        	System.out.print(sql);
 	            
@@ -130,10 +130,12 @@ public class  PostgreSqlConn{
 				ps = db.prepareStatement("select * from ehotel.room where room_status='available'" );
 				rs = ps.executeQuery();
 				while(rs.next()){
-					Integer room_no = Integer.parseInt(rs.getString("room_no"));
-					String room_status = rs.getString("room_status");
-					Room room = new Room(room_no, room_status);
-					Rooms.add(room);
+					Integer idroom = Integer.parseInt(rs.getString("idroom"));
+					String nameHotel = rs.getString("namehotel");
+					String dateStart = rs.getString("datestat");
+					String dateEnd = rs.getString("dateend");
+					//Room room = new Booking(room_no, room_status);
+					//Rooms.add(room);
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -148,29 +150,31 @@ public class  PostgreSqlConn{
 		
 		//aaa
 		
-		public  ArrayList<Room> getbookedRooms(String custSSN){
+		public  ArrayList<Booking> getbookedRooms(String custSSN){
 			
 			getConn();
+			Integer ssncustomer = Integer.parseInt(custSSN);
 			
-			ArrayList<Room> Rooms = new ArrayList<Room>();
+			ArrayList<Booking> Bookings = new ArrayList<Booking>();
 			
 			try {
-				ps = db.prepareStatement("select * from ehotel.room where customer_ssn='"+custSSN+"'");
+				ps = db.prepareStatement("select * from project.booking where ssncustomer="+custSSN);
 				rs = ps.executeQuery();
 				while(rs.next()){
-					Integer room_no = Integer.parseInt(rs.getString("room_no"));
-					String room_status = rs.getString("room_status");
-					Room room = new Room(room_no, room_status);
-					Rooms.add(room);
+					Integer idroom = Integer.parseInt(rs.getString("idroom"));
+					String nameHotel = rs.getString("namehotel");
+					String dateStart = rs.getString("datestart");
+					String dateEnd = rs.getString("dateend");
+					Booking booking = new Booking(idroom, nameHotel, ssncustomer, dateStart, dateEnd);
+					Bookings.add(booking);
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
 	        	closeDB();
 	        }
 						
-			return Rooms;
+			return Bookings;
 			
 		}
 		

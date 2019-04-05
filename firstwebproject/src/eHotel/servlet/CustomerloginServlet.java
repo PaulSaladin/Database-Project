@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import eHotel.connections.PostgreSqlConn;
 import eHotel.entities.Room;
+import eHotel.entities.Booking;
 
 public class CustomerloginServlet extends HttpServlet {
 
@@ -26,18 +27,18 @@ public class CustomerloginServlet extends HttpServlet {
 		
 		PostgreSqlConn con = new PostgreSqlConn();
 //		[0]:name,[1]:pwd
-		String[] pwdfromdb = con.getuserinforbycustSSN(userSSN);
+		String[] pwdfromdb = con.getuserinforbycustSSN(Integer.parseInt(userSSN));
 		
 		
 		
-		if (pwd.equals(pwdfromdb[1])) {			
+		if (pwd.equals(pwdfromdb[0])) {			
 			
-			ArrayList<Room> bookedRooms = con.getbookedRooms(userSSN);
+			ArrayList<Booking> bookedRooms = con.getbookedRooms(userSSN);
 			
 			ArrayList<Room> allRooms = con.getAllAvailRooms();
 			
 			
-			req.setAttribute("CustName", pwdfromdb[0]);
+			req.setAttribute("CustName", pwdfromdb[1]);
 			req.setAttribute("bookedRooms", bookedRooms);
 			req.setAttribute("allRooms", allRooms);
 
