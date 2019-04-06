@@ -67,7 +67,7 @@ public class  PostgreSqlConn{
 				}
 	            
 	        }catch(SQLException e){
-	            e.printStackTrace();
+	            System.out.println(e);
 	        }finally {
 	        	closeDB();
 	        }
@@ -104,7 +104,7 @@ public class  PostgreSqlConn{
 			
 	        try{
 	        	st = db.createStatement();
-	        	sql = "insert into ehotel.customer values("+param[0]+",'"+param[1]+"','"+param[2]+"',now(),'"+param[3]+"')";
+	        	sql = "insert into project.customer values("+param[0]+",'"+param[1]+"','"+param[2]+"',now(),'"+param[3]+"')";
 	        	
 	        	System.out.print(sql);
 	            
@@ -127,13 +127,11 @@ public class  PostgreSqlConn{
 			ArrayList<Room> Rooms = new ArrayList<Room>();
 			
 			try {
-				ps = db.prepareStatement("select * from ehotel.room where room_status='available'" );
+				ps = db.prepareStatement("select * from project.room" );
 				rs = ps.executeQuery();
 				while(rs.next()){
 					Integer idroom = Integer.parseInt(rs.getString("idroom"));
 					String nameHotel = rs.getString("namehotel");
-					String dateStart = rs.getString("datestat");
-					String dateEnd = rs.getString("dateend");
 					//Room room = new Booking(room_no, room_status);
 					//Rooms.add(room);
 				}
@@ -176,6 +174,24 @@ public class  PostgreSqlConn{
 						
 			return Bookings;
 			
+		}
+		
+		public ArrayList<String> getAllHotelChains(){
+			ArrayList<String> names = new ArrayList<String>();
+			try {
+				ps = db.prepareStatement("select namehotelchain from project.hotelchain");
+				rs = ps.executeQuery();
+				while(rs.next()){
+					String nameHotelChain = rs.getString("namehotelchain");
+					names.add(nameHotelChain);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+	        	closeDB();
+	        }
+						
+			return names;
 		}
 		
 		public String bookRoom(String custName, String roomno){
@@ -236,8 +252,239 @@ public class  PostgreSqlConn{
 	        }
 			      
 	    }
-
-
 		
+		public String rentRoomOnlyWithIdBooking(String idBooking){
+			String idRenting = "";
+            getConn();
+            int count = 0;
+            String values ="";
+
+            try {
+                ps = db.prepareStatement("select * from project.booking where idbooking="+idBooking + " and rented = false ");
+                rs = ps.executeQuery();
+                while(rs.next()){
+                    count += 1;
+                    String idroom = rs.getString("idroom");
+                    String nameHotel = rs.getString("namehotel");
+                    String dateStart = rs.getString("datestart");
+                    String dateEnd = rs.getString("dateend");
+                    String custSSN = rs.getString("ssncustomer");
+                    values = "("+idBooking+", "+idroom+", '"+nameHotel+"', "+custSSN+", '"+dateStart+"', '"+dateEnd+"')";
+                }
+
+                if(count == 0) {
+                    return "";
+                }
+                ps = db.prepareStatement("insert into project.renting (idbooking, idroom, nameHotel, ssncustomer, datestart, dateend) values " + values);
+                ps.executeUpdate();
+                ps = db.prepareStatement("UPDATE project.booking SET rented=true WHERE idbooking =" + idBooking);
+                ps.executeUpdate();
+                ps = db.prepareStatement("select idrenting from project.renting where(idbooking =" + idBooking +")");
+                rs = ps.executeQuery();
+                while(rs.next()) {
+                	idRenting = rs.getString("idrenting");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                closeDB();
+            }
+
+            return idRenting;
+        }
+		
+
+		public ArrayList<String[]> getRoomsOKInHotel(String hotel, String priceMin, String priceMax, String capacity){
+			System.out.println("entrée getRoomsOK");
+			ArrayList<String[]> rooms = new ArrayList<String[]>();
+			try {
+				
+				String roomCondition = "";
+					
+				roomCondition = " where ( namehotel = '" + hotel + "' and ";
+
+				if (priceMin.equals("")) {
+				}
+				else {
+					roomCondition += "price >= " + priceMin+ " and ";
+				}
+				if (priceMax.equals("")) {
+				}
+				else {
+					roomCondition += "price <= " + priceMax+ " and ";
+				}
+				if(capacity.equals("")) {
+					roomCondition = roomCondition.substring(0, roomCondition.length()-4);
+				}
+				else {
+					roomCondition += "capacity =" + capacity;
+				}
+				roomCondition += ")";
+				
+				ps = db.prepareStatement("select idroom,namehotel,price from project.room"+roomCondition);
+				rs = ps.executeQuery();
+				while(rs.next()){
+					//System.out.println(test);
+					String idroom = rs.getString("idroom");
+					String price = rs.getString("price");
+					String hotelName = rs.getString("namehotel");
+					String[] room = {idroom, hotelName, price};
+					rooms.add(room);
+				}
+				rs.close();
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				System.out.println(e);
+			}
+						
+			return rooms;
+			
+		}
+		
+		public  ArrayList<String[]> getAllAvailRoomsInHotel(String hotel, String dateStart, String dateEnd, String capacity, String priceMin, String priceMax){
+			getConn();
+			
+			ArrayList<String[]> Rooms = new ArrayList<String[]>();
+			
+			try {
+				ArrayList<String[]> rooms = getRoomsOKInHotel(hotel,priceMin,priceMax,capacity);
+				String bookingCondition = "";
+				System.out.println("entré getAllAvailRooms avant boucle OK");
+				System.out.println(rooms.size());
+				for(String[] room : rooms) {
+					int count = 0;
+					bookingCondition = " where ( idroom = " + room[0] + " and namehotel ='" + hotel + "' and datestart <= '" + dateEnd + "' and dateend > '" + dateStart + "')";
+					ps = db.prepareStatement("select idroom from project.booking"+bookingCondition);
+					rs = ps.executeQuery();
+					while(rs.next()) {
+						count += 1;
+					}
+					System.out.println(count);
+					rs.close();
+					ps = db.prepareStatement("select idroom from project.renting"+bookingCondition);
+					rs = ps.executeQuery();
+					while(rs.next()) {
+						count += 1;
+					}
+					System.out.print(count);
+					if(count==0) {
+						System.out.println(room[0]);
+						System.out.println(room[1]);
+						System.out.println(room[2]);
+						Rooms.add(room);
+					}
+				}
+			
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				System.out.println(e);
+			} finally {
+	        	closeDB();
+	        }
+						
+			return Rooms;
+		}
+		
+		public String getHotelnameByEmployeeId(String employee_id) {
+			getConn();
+			String hotelName = "";
+	        try{
+	        	
+        		ps = db.prepareStatement("select namehotel from project.employee where namee = '"+ employee_id +"'");
+        		System.out.println("select namehotel from project.employee where namee = '"+ employee_id +"'");
+        		ResultSet rs = ps.executeQuery();  
+        		while(rs.next()) {
+        			hotelName = rs.getString("namehotel");
+        		}
+        		rs.close();
+        		ps.close();
+
+	        }catch(SQLException e){
+	            System.out.println(e);
+	        }finally {
+	        	closeDB();
+	        }
+			      
+			return hotelName;
+		}
+		
+		public void pay(String idrentingEntered, String amount) {
+			getConn();
+			
+	        try{
+	        	
+        		ps = db.prepareStatement("insert into project.payment (amount,idrenting) values ("+ amount + "," + idrentingEntered +")" );
+        		ps.executeUpdate();  
+
+	        }catch(SQLException e){
+	            System.out.println(e);
+	        }finally {
+	        	closeDB();
+	        }
+			
+		}
+		
+		public String rentRoom2(String room, String hotelname, String dateStart, String dateEnd, String ssncustomer){
+			String idRenting = "";
+            getConn();
+            String values ="("+ room + ",'" + hotelname + "'," + ssncustomer + ",'" + dateStart + "','" + dateEnd+ "')";
+            System.out.println("insert into project.renting (idroom, nameHotel, ssncustomer, datestart, dateend) values "+ values);
+
+            try {
+                ps = db.prepareStatement("insert into project.renting (idroom, nameHotel, ssncustomer, datestart, dateend) values "+ values );
+                ps.executeUpdate();
+                
+                ps = db.prepareStatement("select idrenting from project.renting where (idroom = "+ room +" and nameHotel = '" + hotelname
+                		+ "' and ssncustomer = " + ssncustomer + " and datestart = '" + dateStart + "' and dateend = '"+dateEnd+"')");
+                rs = ps.executeQuery();
+                while(rs.next()) {
+                	idRenting = rs.getString("idrenting");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                closeDB();
+            }
+
+            return idRenting;
+        }
+		
+		
+	public String getPriceByBooking(String idbooking) {
+		getConn();
+		String hotelName = "";
+		String idroom = "";
+		String price = "";
+        try{
+        	
+    		ps = db.prepareStatement("select idroom, namehotel from project.booking where idbooking = "+ idbooking );
+    		ResultSet rs = ps.executeQuery();  
+    		while(rs.next()) {
+    			hotelName = rs.getString("namehotel");
+    			idroom = rs.getString("idroom");
+    		}
+    		rs.close();
+    		
+    		ps = db.prepareStatement("select price from project.room where (idroom = "+ idroom +" and namehotel ='" +hotelName + "')" );
+    		rs = ps.executeQuery();  
+    		while(rs.next()) {
+    			price = rs.getString("price");
+    		}
+    		rs.close();
+    		ps.close();
+    			
+        }catch(SQLException e){
+            System.out.println(e);
+        }finally {
+        	closeDB();
+        }
+		      
+		return price;
 	}
+		
+		
+}
 

@@ -1,5 +1,6 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="eHotel.entities.Booking"%>
+<%@page import = "eHotel.connections.PostgreSqlConn"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
@@ -36,9 +37,67 @@
 					%>
 				</ul>
 				<input type="hidden" name="custName" value="<%=CustName%>" />
-				<h4>Here are available rooms</h4>
+				<h4>Search a room :</h4>
+				
+				
+				Hotel Chain : 
+					<select name = "hotelChain">
+					<%
+						ArrayList<String> hotelChain =  new ArrayList<String>();
+						hotelChain.add("");
+						hotelChain.add("Pivac");
+						hotelChain.add("Super Hotel");
+						hotelChain.add("Cheraton");
+						hotelChain.add("Hilton");
+						hotelChain.add("Ibis");
+						if (hotelChain != null) {
+							for (String nameHotelChain : hotelChain) {
+					%>					
+						<option><%=nameHotelChain%></option>
 
-				<button type="submit" onclick="return confirm('book?');">book</button>
+					<%
+						}
+						}
+					%>
+				</select>
+				<br><br>
+				
+				
+				Category : 
+				<select name = "category">
+					<%
+						String[] rates = {"","1","2","3","4","5"};
+						if (rates != null) {
+							for (String rate : rates) {
+					%>					
+						<option><%=rate%></option>
+
+					<%
+						}
+						}
+					%>
+				</select>
+				<br><br>
+				
+				Area : 
+				<select name = "category">
+					<%
+						String[] areas = {"","QC","ON","MB","BC","NB", "NS", "AB"};
+						if (areas != null) {
+							for (String area : areas) {
+					%>					
+						<option><%=area%></option>
+
+					<%
+						}
+						}
+					%>
+				</select>
+				<br><br>
+				
+				
+
+				<button type="submit" value="submit" onclick="return validate();">search</button>
 	</form>
 
 
