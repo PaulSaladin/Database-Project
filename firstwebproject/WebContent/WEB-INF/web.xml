@@ -12,7 +12,7 @@
   <servlet-name>loginServlet</servlet-name>
   <url-pattern>/logintest</url-pattern>
  </servlet-mapping>
- 
+
  <!-- add a customer register servlet here add a new customer in customer table -->
  <servlet>
  <description></description>
@@ -24,7 +24,40 @@
   <servlet-name>custregServlet</servlet-name>
   <url-pattern>/cusRegister</url-pattern>
  </servlet-mapping>
- 
+
+ <servlet>
+ <description></description>
+ <display-name>rent</display-name>
+ <servlet-name>rentServlet</servlet-name>
+ <servlet-class>eHotel.servlet.RentServlet</servlet-class>
+ </servlet>
+ <servlet-mapping>
+  <servlet-name>rentServlet</servlet-name>
+  <url-pattern>/rentRoom</url-pattern>
+ </servlet-mapping>
+
+ <servlet>
+ <description></description>
+ <display-name>pay</display-name>
+ <servlet-name>paymentServlet</servlet-name>
+ <servlet-class>eHotel.servlet.PaymentServlet</servlet-class>
+ </servlet>
+ <servlet-mapping>
+  <servlet-name>paymentServlet</servlet-name>
+  <url-pattern>/payment</url-pattern>
+ </servlet-mapping>
+
+ <servlet>
+ <description></description>
+ <display-name>checkIn</display-name>
+ <servlet-name>checkInServlet</servlet-name>
+ <servlet-class>eHotel.servlet.CheckInServlet</servlet-class>
+ </servlet>
+ <servlet-mapping>
+  <servlet-name>checkInServlet</servlet-name>
+  <url-pattern>/CheckInMenu</url-pattern>
+ </servlet-mapping>
+
  <servlet>
  <description></description>
  <display-name>custlogin</display-name>
@@ -35,7 +68,7 @@
   <servlet-name>custloginServlet</servlet-name>
   <url-pattern>/custlogin</url-pattern>
  </servlet-mapping>
- 
+
  <servlet>
  <description></description>
  <display-name>roombook</display-name>
@@ -46,7 +79,7 @@
   <servlet-name>roombookServlet</servlet-name>
   <url-pattern>/roombook</url-pattern>
  </servlet-mapping>
- 
+
 
 
  <welcome-file-list>

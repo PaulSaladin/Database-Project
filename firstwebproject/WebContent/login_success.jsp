@@ -8,7 +8,22 @@
 <body>
 <%
 String employee_id = (String)request.getParameter("employee_id");
+request.setAttribute("employee_id", employee_id);
+RequestDispatcher rd = request.getRequestDispatcher("employee_checkin.jsp");
+
 %>
-	<h4>Welcome,<%=employee_id%></h4>
+
+<script>
+	function o(){
+		alert("password can't be null");
+		rd.forward(request,response);
+	return
+	}
+</script>
+
+
+	<h4>Welcome, <%=employee_id%></h4>
+	<button onclick="return o();" >Check-In a booking</button>
+	<button onclick = "" value="renting">Rent a room</button>
 </body>
 </html>
